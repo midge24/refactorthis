@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
 using RefactorThis.Persistence;
+using RefactorThis.Persistence.Entities;
 
 namespace RefactorThis.Domain
 {
-	public class InvoicePaymentProcessor
+    public class InvoicePaymentProcessor
 	{
 		private readonly InvoiceRepository _invoiceRepository;
 
@@ -15,13 +16,15 @@ namespace RefactorThis.Domain
 
 		public string ProcessPayment( Payment payment )
 		{
-			var inv = _invoiceRepository.GetInvoice( payment.Reference );
+			var inv = _invoiceRepository.GetInvoiceByReference( payment.Reference );
 
 			var responseMessage = string.Empty;
 
 			if ( inv == null )
 			{
-				throw new InvalidOperationException( "There is no invoice matching this payment" );
+				//throw new InvalidOperationException( "There is no invoice matching this payment" );
+				responseMessage = "There is no invoice matching this payment";
+				return responseMessage;
 			}
 			else
 			{
