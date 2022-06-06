@@ -15,7 +15,15 @@ using RefactorThis.Services.Contracts;
 [TestFixture]
 public class InvoicePaymentProcessorTests
 {
-    private ILogger<PaymentsController> _logger;
+    private Mock<ILogger<PaymentsController>> MockLogger;
+    private Mock<IInvoiceService> MockInvoiceService;
+
+    public InvoicePaymentProcessorTests()
+    {
+        MockInvoiceService = new Mock<IInvoiceService>();
+        MockLogger = new Mock<ILogger<PaymentsController>>();
+    }
+
 
     [Test]
     public void ProcessPayment_Should_ReturnFailureMessage_When_PaymentIsNull()
@@ -32,15 +40,13 @@ public class InvoicePaymentProcessorTests
 
         repo.Add(invoice);
 
-        var MockInvoicesService = new Mock<IInvoiceService>();
+        var controller = new PaymentsController(MockLogger.Object, repo, MockInvoiceService.Object);
 
-        var controller = new PaymentsController(_logger, repo, MockInvoicesService.Object);
+        var preResult = controller.ProcessPayment(null);
 
-        var result = controller.ProcessPayment(null);
+        var result = ((BadRequestObjectResult)preResult!.Result!).Value;
 
-        var finalResult = ((BadRequestObjectResult)result!.Result!).Value;
-
-        Assert.AreEqual("Unable to process payment - payment is null", finalResult);
+        Assert.AreEqual("Unable to process payment - payment is null", result);
     }
 
     [Test]
@@ -58,14 +64,13 @@ public class InvoicePaymentProcessorTests
 
         repo.Add(invoice);
 
-        var MockInvoicesService = new Mock<IInvoiceService>();
-
-        var controller = new PaymentsController(_logger, repo, MockInvoicesService.Object);
+        var controller = new PaymentsController(MockLogger.Object, repo, MockInvoiceService.Object);
 
         var payment = new Payment()
         {
             InvoiceReference = "abc"
         };
+
         var preResult = controller.ProcessPayment(payment);
 
         var result = ((BadRequestObjectResult)preResult!.Result!).Value;
@@ -94,9 +99,7 @@ public class InvoicePaymentProcessorTests
             InvoiceReference = "abc"
         };
 
-        var MockInvoicesService = new Mock<IInvoiceService>();
-
-        var controller = new PaymentsController(_logger, repo, MockInvoicesService.Object);
+        var controller = new PaymentsController(MockLogger.Object, repo, MockInvoiceService.Object);
         var preResult = controller.ProcessPayment(payment);
         var result = ((BadRequestObjectResult)preResult!.Result!).Value;
 
@@ -122,9 +125,7 @@ public class InvoicePaymentProcessorTests
             InvoiceReference = "abc"
         };
 
-        var MockInvoicesService = new Mock<IInvoiceService>();
-
-        var controller = new PaymentsController(_logger, repo, MockInvoicesService.Object);
+        var controller = new PaymentsController(MockLogger.Object, repo, MockInvoiceService.Object);
         var preResult = controller.ProcessPayment(payment);
         var result = ((BadRequestObjectResult)preResult!.Result!).Value;
 
@@ -150,9 +151,7 @@ public class InvoicePaymentProcessorTests
             InvoiceReference = "abc"
         };
 
-        var MockInvoicesService = new Mock<IInvoiceService>();
-
-        var controller = new PaymentsController(_logger, repo, MockInvoicesService.Object);
+        var controller = new PaymentsController(MockLogger.Object, repo, MockInvoiceService.Object);
         var preResult = controller.ProcessPayment(payment);
         var result = ((BadRequestObjectResult)preResult!.Result!).Value;
 
@@ -171,11 +170,9 @@ public class InvoicePaymentProcessorTests
 
         var factory = serviceProvider.GetService<ILoggerFactory>();
 
-        _logger = factory!.CreateLogger<PaymentsController>();
+        var _logger = factory!.CreateLogger<PaymentsController>();
 
-        var MockInvoicesService = new Mock<IInvoiceService>();
-
-        var controller = new PaymentsController(_logger, repo, MockInvoicesService.Object);
+        var controller = new PaymentsController(_logger, repo, MockInvoiceService.Object);
 
         try
         {
@@ -215,11 +212,10 @@ public class InvoicePaymentProcessorTests
             InvoiceReference = "abc"
         };
 
-        var MockInvoicesService = new Mock<IInvoiceService>();
-
-        var controller = new PaymentsController(_logger, repo, MockInvoicesService.Object);
+        var controller = new PaymentsController(MockLogger.Object, repo, MockInvoiceService.Object);
         var preResult = controller.ProcessPayment(payment);
         var result = ((BadRequestObjectResult)preResult!.Result!).Value;
+
         StringAssert.Contains($"Invoice {invoice.Reference} - is already fully paid", result!.ToString());
     }
 
@@ -251,9 +247,7 @@ public class InvoicePaymentProcessorTests
             InvoiceReference = "abc"
         };
 
-        var MockInvoicesService = new Mock<IInvoiceService>();
-
-        var controller = new PaymentsController(_logger, repo, MockInvoicesService.Object);
+        var controller = new PaymentsController(MockLogger.Object, repo, MockInvoiceService.Object);
         var preResult = controller.ProcessPayment(payment);
         var result = ((BadRequestObjectResult)preResult!.Result!).Value;
 
@@ -285,9 +279,7 @@ public class InvoicePaymentProcessorTests
             InvoiceReference = "abc"
         };
 
-        var MockInvoicesService = new Mock<IInvoiceService>();
-
-        var controller = new PaymentsController(_logger, repo, MockInvoicesService.Object);
+        var controller = new PaymentsController(MockLogger.Object, repo, MockInvoiceService.Object);
         var preResult = controller.ProcessPayment(payment);
         var result = ((OkObjectResult)preResult!.Result!).Value;
 
@@ -319,9 +311,7 @@ public class InvoicePaymentProcessorTests
             InvoiceReference = "abc"
         };
 
-        var MockInvoicesService = new Mock<IInvoiceService>();
-
-        var controller = new PaymentsController(_logger, repo, MockInvoicesService.Object);
+        var controller = new PaymentsController(MockLogger.Object, repo, MockInvoiceService.Object);
         var preResult = controller.ProcessPayment(payment);
         var result = ((OkObjectResult)preResult!.Result!).Value;
 
@@ -350,14 +340,11 @@ public class InvoicePaymentProcessorTests
             InvoiceReference = "abc"
         };
 
-        var MockInvoicesService = new Mock<IInvoiceService>();
-
-        var controller = new PaymentsController(_logger, repo, MockInvoicesService.Object);
+        var controller = new PaymentsController(MockLogger.Object, repo, MockInvoiceService.Object);
         var preResult = controller.ProcessPayment(payment);
         var result = ((BadRequestObjectResult)preResult!.Result!).Value;
 
         StringAssert.Contains($"Invoice {invoice.Reference} - the payment ({payment.Amount}) is greater than the invoice amount ({invoice.Amount})", result!.ToString());
-
     }
 
     [Test]
@@ -380,9 +367,7 @@ public class InvoicePaymentProcessorTests
             InvoiceReference = "abc"
         };
 
-        var MockInvoicesService = new Mock<IInvoiceService>();
-
-        var controller = new PaymentsController(_logger, repo, MockInvoicesService.Object);
+        var controller = new PaymentsController(MockLogger.Object, repo, MockInvoiceService.Object);
         var preResult = controller.ProcessPayment(payment);
         var result = ((OkObjectResult)preResult!.Result!).Value;
 
@@ -408,9 +393,7 @@ public class InvoicePaymentProcessorTests
             InvoiceReference = "abc"
         };
 
-        var MockInvoicesService = new Mock<IInvoiceService>();
-
-        var controller = new PaymentsController(_logger, repo, MockInvoicesService.Object);
+        var controller = new PaymentsController(MockLogger.Object, repo, MockInvoiceService.Object);
         var preResult = controller.ProcessPayment(payment);
         var result = ((OkObjectResult)preResult!.Result!).Value;
 
