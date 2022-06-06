@@ -1,0 +1,20 @@
+Notes on development
+--------------------
+
+Created this as a web API as allows external and internal clients to access the payments process easily.
+
+Created interfaces for payments, invoices, and invoice repository so they can be changed without breaking clients using them by either implementing default methods in the interface or creating a new interface.
+
+Added Data transfer objects for invoice as want to be using these instead of entities direct. Allows the reshaping of data that client sees eg can hide data they shouldnt see or for reducing payload.
+
+Added Mappers to map invoice to invoice dto.
+
+Added Invoice Services - used by PaymentsController GetInvoiceByReferenceUsingDTO() as a test - would allow front end projects eg vue, to access the api.
+
+Started to add ValidationExtensions so can validate the dtos - see GetInvoiceInputDto in GetInvoiceDtos.cs. Can be tested via swagger /api/Payments/invoiceDTOwithValidation (not final name).
+
+Changed error messages return to include invoice reference to identify the invoice
+
+Tests
+Added some additional tests to test edge cases eg invoice amount is negative, payment is null etc
+Corrected test that said it was for a nonpartial payment but was setup with a partial payment.

@@ -37,9 +37,9 @@ namespace RefactorThis.Services
         /// </summary>
         /// <param name="reference"></param>
         /// <returns></returns>
-        public virtual InvoicesDto GetInvoiceByReference(string reference)
+        public virtual GetInvoiceOutputDto GetInvoiceByReference(string reference)
         {
-            InvoicesDto result;
+            GetInvoiceOutputDto result;
 
             try
             {

@@ -1,4 +1,5 @@
 ﻿using RefactorThis.Helpers;
+using RefactorThis.Persistence.Entities;
 using RefactorThis.Persistence.Models;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,20 @@ namespace RefactorThis.DTO.Invoices
 {
     public class GetInvoiceOutputDto
     {
-        public IEnumerable<InvoicesDto> Invoices { get; set; }
+        [Display(Name = "Reference")]
+        public string Reference { get; set; }
+
+        [Display(Name = "Amount")]
+        public decimal Amount { get; set; }
+
+        [Display(Name = "Amount Paid")]
+        public decimal AmountPaid { get; set; }
+
+        [Display(Name = "Payments")]
+        public List<Payment> Payments { get; set; }
+
+       // public InvoicesDto Invoice { get; set; }
+      //  public IEnumerable<InvoicesDto>? Invoices { get; set; }
     }
 
     /// <summary>

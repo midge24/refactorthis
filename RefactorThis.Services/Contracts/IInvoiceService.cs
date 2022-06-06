@@ -9,6 +9,6 @@ namespace RefactorThis.Services.Contracts
 {
     public interface IInvoiceService
     {
-        InvoicesDto GetInvoiceByReference(string reference);
+        GetInvoiceOutputDto GetInvoiceByReference(string reference);
     }
 }

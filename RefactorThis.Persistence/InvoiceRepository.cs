@@ -17,7 +17,7 @@ namespace RefactorThis.Persistence
              var invoice = new Invoice()
              {
                  Reference = "abc",
-                 Amount = -10,
+                 Amount = 10,
                  AmountPaid = 5,
                  Payments = new List<Payment>
                     {

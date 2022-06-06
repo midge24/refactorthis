@@ -15,11 +15,11 @@ namespace RefactorThis.Mappers.Invoices
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public InvoicesDto MapToDto(Invoice source)
+        public GetInvoiceOutputDto MapToDto(Invoice source)
         {
             if (source is null) return null;
 
-            return new InvoicesDto
+            return new GetInvoiceOutputDto
             {
                 Reference = source.Reference,
                 Amount = source.Amount,

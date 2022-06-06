@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace RefactorThis.Persistence.Interfaces
 {
     public interface IInvoiceRepository
@@ -14,6 +15,6 @@ namespace RefactorThis.Persistence.Interfaces
         bool SaveInvoice(Invoice invoice);
 
         void Add(Invoice invoice);
- 
+
     }
 }

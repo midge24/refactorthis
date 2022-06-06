@@ -39,7 +39,7 @@ namespace RefactorThis.WebApi.Controllers
         public ActionResult GetInvoiceByReferenceUsingDTO(string reference)
         {
 
-            InvoicesDto result;
+            GetInvoiceOutputDto result;
 
             try
             {
@@ -94,6 +94,45 @@ namespace RefactorThis.WebApi.Controllers
             }
         }
 
+
+        [HttpPost("invoiceDTOwithValidation")]
+        [ProducesResponseType(typeof(GetInvoiceOutputDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<GetInvoiceOutputDto> GetInvoiceByReference(GetInvoiceInputDto request)
+        {
+
+            GetInvoiceOutputDto result = null;
+
+            try
+            {
+                if (this.ValidateViewModel(request))
+                {
+                    result = _invoicesService.GetInvoiceByReference(request.Reference);
+
+                    return Ok(result);
+                }
+
+
+                //    if (!string.IsNullOrWhiteSpace(reference))
+                //{
+                //    result = _invoiceRepository.GetInvoiceByReference(reference);
+                //}
+
+                //if (result != null)
+                //{
+                //    return Ok(result);
+                //}
+
+                return SendBadRequest(request!);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("PaymentsController, Error: " + ex?.Message ?? "An unexpected error has occurred.", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, "PaymentsController: Error: " + ex?.Message ?? "An unexpected error has occurred.");
+            }
+        }
+
         /// <summary>
         /// Process the payment
         /// </summary>
@@ -124,7 +163,7 @@ namespace RefactorThis.WebApi.Controllers
                     return BadRequest(responseMessage);
                 }
 
-                responseMessage = inv.TakePayment(payment);
+                responseMessage = inv!.TakePayment(payment);
 
                 return Ok(responseMessage);
             }

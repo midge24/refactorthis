@@ -33,7 +33,7 @@ namespace RefactorThis.WebApi.Infrastructure
         /// </summary>
         /// <param name="requestDto"></param>        
         /// <returns></returns>
-        protected IActionResult SendBadRequest(ValidationExtensions requestDto)
+        protected ActionResult SendBadRequest(ValidationExtensions requestDto)
         {
             if (requestDto is null)
                 requestDto = new DefaultValidatableObject();
