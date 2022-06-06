@@ -36,8 +36,7 @@ namespace RefactorThis.Persistence.Entities
         {
             var responseMessage = string.Empty;
 
-            // Need to record partial payment status before taking payment as it will change when payment is taken
-            var invoicePartialPaymentExistsBeforePayment = this.InvoicePartialPaymentExists;
+            var invoicePartialPaymentExistsBeforePayment = this.Payments != null && this.Payments.Any(x => x.Amount > 0); 
 
             this.AmountPaid += payment.Amount;
 
@@ -125,8 +124,6 @@ namespace RefactorThis.Persistence.Entities
         public decimal TotalInvoicePaymentsMade { get => this.Payments != null ? this.Payments.Sum(x => x.Amount) : 0; }
 
         public decimal AmountRemaining { get => this.Amount - this.AmountPaid; }
-
-        public bool InvoicePartialPaymentExists { get => this.Payments != null && this.Payments.Any(x => x.Amount > 0); } 
 
         public bool InvoiceFullyPaid { get => this.Amount == this.TotalInvoicePaymentsMade; }
 

@@ -20,8 +20,6 @@ namespace RefactorThis.Persistence.Interfaces
         decimal TotalInvoicePaymentsMade {get;}
         decimal AmountRemaining { get; }
 
-        bool InvoicePartialPaymentExists { get; }
-
         bool InvoiceFullyPaid { get; }     
 
         string TakePayment(Payment payment);
