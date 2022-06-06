@@ -13,7 +13,7 @@ using Moq;
 using RefactorThis.Services.Contracts;
 
 [TestFixture]
-public class InvoicePaymentProcessorTests2
+public class InvoicePaymentProcessorTests
 {
     private ILogger<PaymentsController> _logger;
 

@@ -36,7 +36,6 @@ namespace RefactorThis.Persistence.Entities
         {
             var responseMessage = string.Empty;
 
-
             // Need to record partial payment status before taking payment as it will change when payment is taken
             var invoicePartialPaymentExistsBeforePayment = this.InvoicePartialPaymentExists;
 
