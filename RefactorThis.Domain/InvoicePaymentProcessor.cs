@@ -16,7 +16,7 @@ namespace RefactorThis.Domain
 
 		public string ProcessPayment( Payment payment )
 		{
-			var inv = _invoiceRepository.GetInvoiceByReference( payment.Reference );
+			var inv = _invoiceRepository.GetInvoiceByReference( payment.InvoiceReference);
 
 			var responseMessage = string.Empty;
 

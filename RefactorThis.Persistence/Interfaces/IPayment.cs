@@ -10,7 +10,7 @@ namespace RefactorThis.Persistence.Interfaces
     public interface IPayment
     {
         decimal Amount { get; set; }
-        string Reference { get; set; }
+        string InvoiceReference { get; set; }
 
         string ValidatePartialPayment(Invoice invoice);
     }

@@ -1,11 +1,12 @@
 using Newtonsoft.Json;
 using RefactorThis.Persistence.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace RefactorThis.Persistence.Entities
 {
-    
+
     public class Invoice : IInvoice
     {
         public InvoiceRepository Repository;
@@ -15,7 +16,7 @@ namespace RefactorThis.Persistence.Entities
         {
 
         }
-       
+
         public Invoice(InvoiceRepository repository)
         {
             Repository = repository;
@@ -35,6 +36,10 @@ namespace RefactorThis.Persistence.Entities
         {
             var responseMessage = string.Empty;
 
+
+            // Need to record partial payment status before taking payment as it will change when payment is taken
+            var invoicePartialPaymentExistsBeforePayment = this.InvoicePartialPaymentExists;
+
             this.AmountPaid += payment.Amount;
 
             if (this.Payments == null)
@@ -45,13 +50,27 @@ namespace RefactorThis.Persistence.Entities
             this.Payments.Add(payment);
 
             // Determine the responseMessage
-            if (this.Amount == payment.Amount)
+            if (invoicePartialPaymentExistsBeforePayment)
             {
-                responseMessage = "invoice is now fully paid";
+                if (this.AmountRemaining == 0) 
+                {
+                    responseMessage = $"Invoice {this.Reference} - final partial payment received, invoice is now fully paid";
+                }
+                else 
+                {
+                    responseMessage = $"Invoice {this.Reference} - another partial payment received, still not fully paid";
+                }
             }
-            else if (payment.Amount < this.Amount)
+            else
             {
-                responseMessage = "invoice is now partially paid";
+                if (this.Amount == payment.Amount)
+                {
+                    responseMessage = $"Invoice {this.Reference} - invoice is now fully paid";
+                }
+                else
+                {
+                    responseMessage = $"Invoice {this.Reference} - invoice is now partially paid";
+                }
             }
 
             return responseMessage;
@@ -63,26 +82,41 @@ namespace RefactorThis.Persistence.Entities
         /// </summary>
         /// <param name="responseMessage"></param>
         /// <returns></returns>
-        public bool CheckInitialStatus(out string responseMessage)
+        public string CheckInitialState(Payment payment) 
         {
-             responseMessage = string.Empty;
-            var isValid = true;
+            var responseMessage = string.Empty;
 
+            if (payment.Amount < 0)
+            {
+                responseMessage = $"Invoice {this.Reference} - invalid payment amount ({payment.Amount})";
+            }
+            
             if (this.Amount == 0 && this.Payments == null)
             {
-                responseMessage = "no payment needed";
+                responseMessage += $"Invoice {this.Reference} - no payment needed" + Environment.NewLine;
             }
-            else if (this.Amount <= 0)
+            
+            if (this.Amount <= 0)
             {
-                responseMessage = "The invoice is in an invalid state, it has an amount of 0 and it has payments.";
-                isValid = false;
+                responseMessage += $"Invoice {this.Reference} - has an invalid invoice amount ({this.Amount})" + Environment.NewLine;
             }
-            else if (this.InvoiceFullyPaid)
+            
+            if (this.InvoiceFullyPaid)
             {
-                responseMessage = "invoice was already fully paid";
+                responseMessage += $"Invoice {this.Reference} - is already fully paid" + Environment.NewLine;
+            }
+            
+            if (payment.Amount > this.Amount)
+            {
+                responseMessage += $"Invoice {this.Reference} - the payment ({payment.Amount}) is greater than the invoice amount ({this.Amount})" + Environment.NewLine;
+            }
+            
+            if (payment.Amount > this.AmountRemaining)
+            {
+                responseMessage += $"Invoice {this.Reference} - the payment ({payment.Amount}) is greater than the partial amount remaining ({this.AmountRemaining})" + Environment.NewLine;
             }
 
-            return isValid;
+            return responseMessage;
         }
 
         public string Reference { get; set; }
@@ -93,9 +127,9 @@ namespace RefactorThis.Persistence.Entities
 
         public decimal AmountRemaining { get => this.Amount - this.AmountPaid; }
 
-        public bool InvoicePartialPaymentExists { get => this.Payments != null && this.Payments.Any(); }
+        public bool InvoicePartialPaymentExists { get => this.Payments != null && this.Payments.Any(x => x.Amount > 0); } 
 
         public bool InvoiceFullyPaid { get => this.Amount == this.TotalInvoicePaymentsMade; }
-        
+
     }
 }

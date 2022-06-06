@@ -5,7 +5,7 @@ namespace RefactorThis.Persistence.Entities
     public class Payment: IPayment
     {
         public decimal Amount { get; set; }
-        public string Reference { get; set; }
+        public string InvoiceReference { get; set; }
 
         /// <summary>
         /// Validate a partial payment

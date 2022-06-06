@@ -26,7 +26,7 @@ namespace RefactorThis.Persistence.Interfaces
 
         string TakePayment(Payment payment);
 
-        bool CheckInitialStatus(out string responseMessage);
+        string CheckInitialState(Payment payment); 
 
         bool Save();
     }
